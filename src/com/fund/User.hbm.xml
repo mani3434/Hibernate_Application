@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Apr 7, 2018 3:39:39 PM by Hibernate Tools 3.5.0.Final -->
+<hibernate-mapping>
+	<filter-def name="nameFilter" condition="name like :name">
+		<filter-param name="name" type="string"/>
+	</filter-def>
+	
+	<class name="com.fund.User" table="USERS">
+		
+		<cache usage="read-write"/>
+
+
+		<id name="id" type="int">
+			<column name="ID" />
+			<generator class="identity" />
+		</id>
+		<property name="name" type="java.lang.String">
+			<column name="NAME" />
+		</property>
+
+		<!-- When we use composition -->
+		<!-- <component name="ProteinData">
+
+			<property name="total" type="int">
+				<column name="TOTAL" />
+			</property>
+			<property name="goal" type="int">
+				<column name="GOAL" />
+			</property>
+
+		</component> -->
+
+		<!-- when we use set type collections -->
+		<!-- <set name="history" table="user_history"> <key column="id"></key> 
+			<composite-element class="com.fund.UserHistory"> <property name="entryTime" 
+			type="date" column="entry_time"></property> <property name="entry" type="string" 
+			column="entry"></property> </composite-element> </set> -->
+
+
+		<!-- when we use list type collections we have to include list-index as 
+			the list is ordered -->
+		<!-- <list name="history" table="user_history"> <key column="id"></key> 
+			<list-index column="position"/> <composite-element class="com.fund.UserHistory"> 
+			<property name="entryTime" type="date" column="entry_time"></property> <property 
+			name="entry" type="string" column="entry"></property> </composite-element> 
+			</list> -->
+
+
+		<!-- when we use map type collections we have to include list-index as 
+			the list is ordered -->
+		<!-- <map name="history" table="user_history"> <key column="id"></key> 
+			<map-key type="string" column="entry_identifier"></map-key> <composite-element 
+			class="com.fund.UserHistory"> <property name="entryTime" type="date" column="entry_time"></property> 
+			<property name="entry" type="string" column="entry"></property> </composite-element> 
+			</map> -->
+
+
+		<!-- when we use plain collection type collections we have to include list-index 
+			as the list is ordered -->
+		<!-- <idbag name="history" table="user_history"> <collection-id type="int" 
+			column="id"> <generator class="increment"></generator> </collection-id> <key 
+			column="user_id"></key> <composite-element class="com.fund.UserHistory"> 
+			<property name="entryTime" type="date" column="entry_time"></property> <property 
+			name="entry" type="string" column="entry"></property> </composite-element> 
+			</idbag> -->
+
+		<list name="history" table="user_history" inverse="true" cascade="save-update">
+			<cache usage="read-write"/>
+			<key column="user_id"></key>
+			<list-index column="position" />
+			
+			<one-to-many class="com.fund.UserHistory"/>
+	
+		</list>
+
+<!-- 		<one-to-one name="proteinData" class="com.fund.ProteinData" cascade="save-update"></one-to-one> -->
+
+
+		<many-to-one name="proteinData" class="com.fund.ProteinData" column="protein_data_id" unique="true" cascade="save-update"></many-to-one>
+		
+		<!-- <join table="user_goalAlert" optional="true">
+			<key column="user_id"/>
+			<many-to-one name="goalAlert" column="goalAlert_id" not-null="true" unique="true" cascade="save-update"></many-to-one>
+		</join> -->
+		
+		<set name="goalAlerts" table ="user_goalAlert" cascade="save-update">
+			<key column="user_id"/>
+			<many-to-many class="com.fund.GoalAlert" column="goalAlert_id"></many-to-many>
+		</set>
+		<filter name="nameFilter"></filter>
+	</class>
+</hibernate-mapping>
